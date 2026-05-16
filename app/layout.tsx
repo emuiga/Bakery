@@ -58,13 +58,20 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: `${SITE_NAME} — Custom Cakes & Pastries in Nakuru, Kenya`,
     description: SITE_DESCRIPTION,
-    // opengraph-image.tsx is auto-detected by Next.js — no manual image needed
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1050,
+        height: 600,
+        alt: "Joyful Bakery — Custom Cakes & Pastries in Nakuru, Kenya",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: `${SITE_NAME} — Custom Cakes & Pastries in Nakuru, Kenya`,
     description: SITE_DESCRIPTION,
-    // twitter-image.tsx falls back to opengraph-image.tsx automatically
+    images: ["/og-image.png"],
   },
   alternates: {
     canonical: SITE_URL,
