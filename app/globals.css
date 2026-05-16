@@ -48,6 +48,12 @@ body {
   will-change: transform;
 }
 
+@media (max-width: 640px) {
+  .animate-marquee {
+    animation-duration: 5s;
+  }
+}
+
 /* Scalloped / dashed card border (Billy's style) */
 .card-scalloped {
   border: 2px dashed rgba(0, 0, 0, 0.18);
