@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nakuru Home Bakery
+
+A beautiful, simple bakery website for a small home-based bakery in Nakuru, Kenya. Customers browse the menu and order via WhatsApp. Content is managed through Contentful CMS — no code changes needed to update products.
+
+## Tech Stack
+
+- **Next.js 16** (App Router, ISR)
+- **TypeScript**
+- **Tailwind CSS v4**
+- **Contentful CMS** (Delivery API)
 
 ## Getting Started
 
-First, run the development server:
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/emuiga/Bakery.git
+cd Bakery
+git checkout develop
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure environment variables
+
+Copy the example file and fill in your Contentful credentials:
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edit `.env.local`:
+
+```
+CONTENTFUL_SPACE_ID=your_space_id_here
+CONTENTFUL_ACCESS_TOKEN=your_delivery_api_token_here
+```
+
+You can find these in your Contentful dashboard under **Settings → API Keys**.
+
+> See **CONTENTFUL_SETUP.md** for full instructions on setting up the content models in Contentful.
+
+### 4. Run the development server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Build for production |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+  page.tsx              # Homepage (hero, featured products, about, delivery)
+  menu/
+    page.tsx            # Full menu with category sections
+    [slug]/
+      page.tsx          # Individual product detail page
+components/
+  Navbar.tsx            # Top navigation bar
+  Footer.tsx            # Footer with WhatsApp and Instagram links
+  ProductCard.tsx       # Product card used in grids
+  WhatsAppButton.tsx    # WhatsApp order button with pre-filled message
+  ContentfulSetupNotice.tsx  # Shown when env vars are not configured
+lib/
+  contentful.ts         # Contentful client and typed query helpers
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Pages
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Route | Description |
+|---|---|
+| `/` | Homepage with hero, featured products, about section, delivery info |
+| `/menu` | Full menu grouped by category with WhatsApp ordering |
+| `/menu/[slug]` | Individual product detail page |
 
-## Deploy on Vercel
+## ISR (Incremental Static Regeneration)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+All pages revalidate every **1 hour** (`revalidate = 3600`). When you update content in Contentful, changes will appear on the live site within an hour — no redeployment required.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Deploy to Vercel or any Node.js host that supports Next.js:
+
+1. Push the `develop` branch (or merge to `main` for production)
+2. Set the environment variables in your hosting dashboard:
+   - `CONTENTFUL_SPACE_ID`
+   - `CONTENTFUL_ACCESS_TOKEN`
+3. Deploy
+
+## Branch Strategy
+
+- `main` — production-ready branch
+- `develop` — active development branch (all changes go here first)
