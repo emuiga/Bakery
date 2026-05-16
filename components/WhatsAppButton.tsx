@@ -1,5 +1,7 @@
+import { waUrl as buildWaUrl } from "@/lib/waUrl";
+
 interface WhatsAppButtonProps {
-  whatsappNumber: string;
+  whatsappNumber?: string;
   productName?: string;
   productPrice?: number;
   className?: string;
@@ -19,7 +21,8 @@ export function WhatsAppButton({
     ? `Hi! I'd like to order: ${productName} (KSh ${productPrice})`
     : `Hi! I'd like to place an order. Can you share what's available today?`;
 
-  const href = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+  const href = buildWaUrl(whatsappNumber, message);
+  if (!href) return null;
 
   const sizeClasses = {
     sm: "px-4 py-2 text-sm",
@@ -29,16 +32,23 @@ export function WhatsAppButton({
 
   const variantClasses = {
     primary:
-      "bg-[#C4673A] hover:bg-[#A5542E] text-white shadow-md hover:shadow-lg",
+      "text-white shadow-md hover:opacity-90",
     outline:
-      "border-2 border-[#C4673A] text-[#C4673A] hover:bg-[#C4673A] hover:text-white",
+      "border-2 text-white border-white hover:bg-white/10",
   };
+
+  // Joyful pink primary color applied via style for oklch/rgb support
+  const primaryStyle =
+    variant === "primary"
+      ? { backgroundColor: "rgb(228, 121, 143)" }
+      : {};
 
   return (
     <a
       href={href}
       target="_blank"
       rel="noopener noreferrer"
+      style={primaryStyle}
       className={`
         inline-flex items-center gap-2 font-semibold rounded-full
         transition-all duration-200 active:scale-95

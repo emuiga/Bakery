@@ -3,6 +3,7 @@ import {
   getCategories,
   getProducts,
 } from "@/lib/contentful";
+import { WHATSAPP_NUMBER } from "@/lib/config";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { ProductCard } from "@/components/ProductCard";
 import { Navbar } from "@/components/Navbar";
@@ -10,6 +11,17 @@ import { Footer } from "@/components/Footer";
 import { ContentfulSetupNotice } from "@/components/ContentfulSetupNotice";
 
 export const revalidate = 3600;
+
+export const metadata = {
+  title: "Our Menu — Cakes, Cookies & Pastries",
+  description:
+    "Browse Joyful Bakery's full menu of custom cakes, cookies, pastries and breads baked fresh in Lanet, Nakuru. Order via WhatsApp today.",
+  openGraph: {
+    title: "Joyful Bakery Menu — Nakuru, Kenya",
+    description:
+      "Fresh custom cakes, cookies, pastries and breads. Order via WhatsApp — 48 hr delivery available.",
+  },
+};
 
 export default async function MenuPage() {
   const [settings, categories, allProducts] = await Promise.all([
@@ -21,6 +33,7 @@ export default async function MenuPage() {
   if (!settings) return <ContentfulSetupNotice />;
 
   const { bakeryName, whatsappNumber, instagramHandle } = settings.fields;
+  const wp = (whatsappNumber as string | undefined) || WHATSAPP_NUMBER;
 
   // Group products by category slug
   const productsByCategory: Record<string, typeof allProducts> = {};
@@ -38,20 +51,20 @@ export default async function MenuPage() {
 
   return (
     <>
-      <Navbar bakeryName={bakeryName as string} />
+      <Navbar whatsappNumber={wp} />
 
       <main className="min-h-screen bg-[#FDFBF7]">
         {/* Page header */}
-        <div className="bg-[#2C1810] text-white py-16 px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-[#E8956D] font-semibold uppercase tracking-wider text-sm mb-2">
+        <div className="text-white py-16 px-4 sm:px-6 lg:px-8 text-center" style={{ backgroundColor: "#0f172b" }}>
+          <p className="font-semibold uppercase tracking-widest text-xs mb-2" style={{ color: "rgb(228, 121, 143)" }}>
             {bakeryName as string}
           </p>
-          <h1 className="font-serif text-4xl sm:text-5xl mb-4">Our Menu</h1>
+          <h1 className="font-aeonik font-[800] text-4xl sm:text-5xl mb-4">Our Menu</h1>
           <p className="text-white/70 max-w-md mx-auto">
             Everything is baked fresh. Order via WhatsApp and we&apos;ll confirm availability.
           </p>
           <div className="mt-8">
-            <WhatsAppButton whatsappNumber={whatsappNumber as string} size="lg" />
+            <WhatsAppButton whatsappNumber={wp} size="lg" />
           </div>
         </div>
 
@@ -108,7 +121,7 @@ export default async function MenuPage() {
                     <ProductCard
                       key={product.sys.id}
                       product={product}
-                      whatsappNumber={whatsappNumber as string}
+                      whatsappNumber={wp}
                     />
                   ))}
                 </div>
@@ -124,7 +137,7 @@ export default async function MenuPage() {
                 Reach out on WhatsApp to find out what&apos;s available today.
               </p>
               <div className="mt-6">
-                <WhatsAppButton whatsappNumber={whatsappNumber as string} />
+                <WhatsAppButton whatsappNumber={wp} />
               </div>
             </div>
           )}
@@ -133,7 +146,7 @@ export default async function MenuPage() {
 
       <Footer
         bakeryName={bakeryName as string}
-        whatsappNumber={whatsappNumber as string}
+        whatsappNumber={wp}
         instagramHandle={instagramHandle as string | undefined}
       />
     </>

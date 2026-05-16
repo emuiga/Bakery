@@ -7,6 +7,7 @@ import {
   getProducts,
   contentfulImageUrl,
 } from "@/lib/contentful";
+import { WHATSAPP_NUMBER } from "@/lib/config";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -40,12 +41,13 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const { bakeryName, whatsappNumber, instagramHandle } = settings.fields;
+  const wp = (whatsappNumber as string | undefined) || WHATSAPP_NUMBER;
   const { name, description, price, image, allergens, category } = product.fields;
   const imgUrl = contentfulImageUrl(image, 1200);
 
   return (
     <>
-      <Navbar bakeryName={bakeryName as string} />
+      <Navbar whatsappNumber={wp} />
 
       <main className="min-h-screen bg-[#FDFBF7]">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -103,7 +105,7 @@ export default async function ProductPage({
 
               <div className="pt-2">
                 <WhatsAppButton
-                  whatsappNumber={whatsappNumber as string}
+                  whatsappNumber={wp}
                   productName={name as string}
                   productPrice={price as number}
                   size="lg"
@@ -120,7 +122,7 @@ export default async function ProductPage({
 
       <Footer
         bakeryName={bakeryName as string}
-        whatsappNumber={whatsappNumber as string}
+        whatsappNumber={wp}
         instagramHandle={instagramHandle as string | undefined}
       />
     </>

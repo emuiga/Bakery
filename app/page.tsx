@@ -5,11 +5,20 @@ import {
   getFeaturedProducts,
   contentfulImageUrl,
 } from "@/lib/contentful";
+import { waUrl } from "@/lib/waUrl";
+import { WHATSAPP_NUMBER } from "@/lib/config";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
 import { ProductCard } from "@/components/ProductCard";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { ContentfulSetupNotice } from "@/components/ContentfulSetupNotice";
+import { MarqueeTicker } from "@/components/MarqueeTicker";
+import { CategoryGrid } from "@/components/CategoryGrid";
+import { ReviewsSection } from "@/components/ReviewsSection";
+import { CelebrationsSection } from "@/components/CelebrationsSection";
+import { DeliveryStrip } from "@/components/DeliveryStrip";
+import { LocationSection } from "@/components/LocationSection";
+import { PricingGuide } from "@/components/PricingGuide";
 
 export const revalidate = 3600;
 
@@ -23,27 +32,31 @@ export default async function HomePage() {
 
   const {
     bakeryName,
-    tagline,
     heroImage,
     heroHeadline,
     heroSubtitle,
     whatsappNumber,
-    deliveryInfo,
     aboutText,
     aboutImage,
     instagramHandle,
   } = settings.fields;
 
-  const heroImgUrl = contentfulImageUrl(heroImage, 1600);
-  const aboutImgUrl = aboutImage ? contentfulImageUrl(aboutImage, 800) : null;
+  const heroImgUrl = contentfulImageUrl(heroImage, 1800);
+  const aboutImgUrl = aboutImage ? contentfulImageUrl(aboutImage, 900) : null;
+  const wp = (whatsappNumber as string | undefined) || WHATSAPP_NUMBER;
+
+  // Pre-order WhatsApp link
+  const preOrderUrl = waUrl(wp, "Hi! I'd like to place a custom order (48hrs+ ahead). Can you help me?") ?? "/menu";
+  // Daily bakes WhatsApp link
+  const dailyUrl = waUrl(wp, "Hi! What daily bakes do you have available today?") ?? "/menu";
 
   return (
     <>
-      <Navbar bakeryName={bakeryName as string} />
+      <Navbar whatsappNumber={wp} />
 
       <main>
-        {/* Hero */}
-        <section className="relative h-[85vh] min-h-[520px] flex items-center justify-center overflow-hidden">
+        {/* ── HERO ────────────────────────────────────────────────── */}
+        <section className="relative h-[90vh] min-h-[560px] flex items-center justify-center overflow-hidden">
           <Image
             src={heroImgUrl}
             alt={bakeryName as string}
@@ -52,51 +65,90 @@ export default async function HomePage() {
             className="object-cover"
             sizes="100vw"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/60" />
+          {/* gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/35 to-black/65" />
+
           <div className="relative z-10 text-center text-white px-4 max-w-3xl mx-auto">
-            <p className="text-sm font-semibold uppercase tracking-widest text-[#E8956D] mb-4">
-              {tagline as string}
-            </p>
-            <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl leading-tight mb-4">
+            <h1
+              className="font-aeonik font-[800] leading-none mb-4"
+              style={{ fontSize: "clamp(2.5rem, 7vw, 5rem)", lineHeight: "1.1" }}
+            >
               {heroHeadline as string}
             </h1>
             {heroSubtitle && (
-              <p className="text-lg sm:text-xl text-white/90 mb-8 max-w-xl mx-auto">
+              <p className="text-lg sm:text-xl text-white/80 mb-10 max-w-xl mx-auto">
                 {heroSubtitle as string}
               </p>
             )}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/menu"
-                className="inline-flex items-center justify-center px-8 py-3.5 bg-white text-[#2C1810] font-semibold rounded-full hover:bg-[#F5F0E8] transition-colors shadow-lg"
-              >
-                See Our Menu
-              </Link>
-              <WhatsAppButton
-                whatsappNumber={whatsappNumber as string}
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-[#2C1810]"
-              />
+
+            {/* Billy's-style order option buttons */}
+            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
+              <div className="text-center">
+                <a
+                  href={preOrderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-10 py-3.5 font-aeonik font-[800] text-sm tracking-widest rounded"
+                  style={{
+                    backgroundColor: "#F5E6A3",
+                    color: "#0f172b",
+                    letterSpacing: "0.12em",
+                  }}
+                >
+                  CUSTOM ORDER
+                </a>
+                <p className="text-white/80 text-sm font-[700] mt-2 tracking-widest">
+                  — GET IT IN 48HRS+ —
+                </p>
+              </div>
+
+              <div className="text-center">
+                <a
+                  href={dailyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block px-10 py-3.5 font-aeonik font-[800] text-sm tracking-widest rounded border-2 border-white text-white hover:bg-white/10 transition-colors"
+                  style={{ letterSpacing: "0.12em" }}
+                >
+                  DAILY BAKES
+                </a>
+                <p className="text-white/80 text-sm font-[700] mt-2 tracking-widest">
+                  — ORDER TODAY —
+                </p>
+              </div>
             </div>
+
+            <Link
+              href="/menu"
+              className="inline-block mt-8 text-white/60 text-sm underline-offset-4 hover:text-white hover:underline transition-colors"
+            >
+              Browse full menu →
+            </Link>
           </div>
         </section>
 
-        {/* Featured Products */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#FDFBF7]">
+        {/* ── CATEGORY GRID ───────────────────────────────────────── */}
+        <CategoryGrid />
+
+        {/* ── MARQUEE TICKER ──────────────────────────────────────── */}
+        <MarqueeTicker />
+
+        {/* ── FAN FAVS ────────────────────────────────────────────── */}
+        <section className="py-16 px-4 sm:px-6 lg:px-8 bg-white">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <p className="text-[#C4673A] font-semibold uppercase tracking-wider text-sm mb-2">
-                Fresh Today
-              </p>
-              <h2 className="font-serif text-4xl text-[#2C1810]">
-                Featured Favourites
-              </h2>
-            </div>
+            <h2
+              className="font-playlist text-5xl mb-10"
+              style={{ color: "#0f172b" }}
+            >
+              Fan Favs...
+            </h2>
 
             {featuredProducts.length === 0 ? (
-              <div className="text-center py-16 text-gray-500">
+              <div className="text-center py-20 text-gray-400">
                 <p className="text-6xl mb-4">🥐</p>
-                <p className="text-lg">Check back soon — something delicious is coming!</p>
+                <p className="text-lg font-aeonik font-[700]" style={{ color: "#0f172b" }}>
+                  Check back soon — something delicious is coming!
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -104,7 +156,7 @@ export default async function HomePage() {
                   <ProductCard
                     key={product.sys.id}
                     product={product}
-                    whatsappNumber={whatsappNumber as string}
+                    whatsappNumber={wp}
                   />
                 ))}
               </div>
@@ -113,65 +165,83 @@ export default async function HomePage() {
             <div className="text-center mt-10">
               <Link
                 href="/menu"
-                className="inline-flex items-center gap-2 text-[#C4673A] font-semibold hover:text-[#A5542E] transition-colors"
+                className="inline-flex items-center gap-2 font-semibold hover:underline"
+                style={{ color: "#0f172b" }}
               >
-                View full menu
-                <span aria-hidden="true">→</span>
+                See everything on our menu →
               </Link>
             </div>
           </div>
         </section>
 
-        {/* Delivery Banner */}
-        <section className="bg-[#C4673A] text-white py-12 px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-2xl mb-2">🚚</p>
-            <h2 className="font-serif text-2xl sm:text-3xl mb-4">Delivery & Ordering</h2>
-            <p className="text-white/90 text-base sm:text-lg leading-relaxed whitespace-pre-line">
-              {deliveryInfo as string}
-            </p>
-            <div className="mt-8">
-              <WhatsAppButton
-                whatsappNumber={whatsappNumber as string}
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-[#C4673A]"
-                size="lg"
-              />
-            </div>
-          </div>
-        </section>
+        {/* ── PRICING GUIDE ────────────────────────────────────────── */}
+        <PricingGuide />
 
-        {/* About */}
-        <section className="py-20 px-4 sm:px-6 lg:px-8 bg-[#FDFBF7]">
+        {/* ── REVIEWS ─────────────────────────────────────────────── */}
+        <ReviewsSection />
+
+        {/* ── CELEBRATIONS ────────────────────────────────────────── */}
+        <CelebrationsSection />
+
+        {/* ── OCCASIONS MARQUEE ───────────────────────────────────── */}
+        <MarqueeTicker
+          items={[
+            "OPENING NIGHT", "SATISFY YOUR SWEET TOOTH", "SUNDAY CELEBRATIONS",
+            "WEDDINGS", "BETTER THAN A THANK-YOU CARD", "WHEN YOU NEED IT",
+            "BIRTHDAYS", "BABY SHOWERS", "OFFICE TREATS", "JUST BECAUSE",
+          ]}
+          bgColor="rgb(228, 121, 143)"
+          textColor="#fff"
+          separator="•"
+        />
+
+        {/* ── DELIVERY STRIP ──────────────────────────────────────── */}
+        <DeliveryStrip />
+
+        {/* ── LOCATION + MAP ──────────────────────────────────────── */}
+        <LocationSection whatsappNumber={wp} />
+
+        {/* ── ABOUT ───────────────────────────────────────────────── */}
+        <section id="about" className="py-20 px-4 sm:px-6 lg:px-8 bg-[#FAFAE8]">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
               {aboutImgUrl && (
-                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl order-2 lg:order-1">
+                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-xl">
                   <Image
                     src={aboutImgUrl}
-                    alt="About our bakery"
+                    alt="About Joyful Bakery"
                     fill
                     className="object-cover"
                     sizes="(max-width: 1024px) 100vw, 50vw"
                   />
                 </div>
               )}
-              <div
-                className={
-                  aboutImgUrl
-                    ? "order-1 lg:order-2"
-                    : "lg:col-span-2 max-w-2xl mx-auto text-center"
-                }
-              >
-                <p className="text-[#C4673A] font-semibold uppercase tracking-wider text-sm mb-3">
-                  Our Story
+              <div>
+                <p
+                  className="font-aeonik font-semibold uppercase tracking-widest text-xs mb-3"
+                  style={{ color: "rgb(228, 121, 143)" }}
+                >
+                  Community Outreach
                 </p>
-                <h2 className="font-serif text-4xl text-[#2C1810] mb-6">
-                  Baked with love in Nakuru
+                <h2
+                  className="font-aeonik font-[800] mb-6"
+                  style={{
+                    fontSize: "clamp(2rem, 4vw, 3.5rem)",
+                    lineHeight: "1.15",
+                    color: "#0f172b",
+                  }}
+                >
+                  Your home bakery<br />in Nakuru
                 </h2>
                 <p className="text-gray-600 text-lg leading-relaxed whitespace-pre-line">
                   {aboutText as string}
                 </p>
+                <div className="mt-8">
+                  <WhatsAppButton
+                    whatsappNumber={wp}
+                    size="lg"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -180,7 +250,7 @@ export default async function HomePage() {
 
       <Footer
         bakeryName={bakeryName as string}
-        whatsappNumber={whatsappNumber as string}
+        whatsappNumber={wp}
         instagramHandle={instagramHandle as string | undefined}
       />
     </>
