@@ -81,7 +81,9 @@ export type SiteSettings = Entry<SiteSettingsSkeleton, undefined>;
 export function contentfulImageUrl(asset: any, width?: number): string {
   const rawUrl = asset.fields.file.url as string;
   const url = rawUrl.startsWith("//") ? `https:${rawUrl}` : rawUrl;
-  return width ? `${url}?w=${width}` : url;
+  const params = new URLSearchParams({ fm: "webp", q: "75" });
+  if (width) params.set("w", String(width));
+  return `${url}?${params.toString()}`;
 }
 
 // ---------------------------------------------------------------------------
